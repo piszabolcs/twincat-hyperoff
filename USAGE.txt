@@ -1,0 +1,72 @@
+TwinCAT HyperOFF (VbsAutoOff) v1.0.0 - USAGE
+============================================
+
+WHAT IS THIS?
+-------------
+A small Windows program that keeps those Windows 11 security features
+(VBS / Hyper-V / Device Guard / Credential Guard / HVCI) switched off
+that prevent the Beckhoff TwinCAT 3 real-time (Real-Time) runtime from
+starting. The domain GPO turns them back on again and again - this
+program removes them automatically and continuously in the background,
+so you do not have to touch anything by hand.
+
+
+INSTALL / START (in the 1-hour admin window)
+---------------------------------------------
+1. Copy the TwinCAT_HyperOFF.exe file to a LOCAL folder on the machine
+   (e.g. the Desktop). Do NOT start it as admin from a network drive.
+
+2. Right-click TwinCAT_HyperOFF.exe  ->  "Run as administrator"
+   (at the UAC prompt: Yes).
+
+3. Click the  "Activate protection"  button.
+   -> An invisible background service is installed (running as SYSTEM),
+      and the first cleanup runs immediately.
+
+4. If after a restart VBS still stays "Active and running":
+   click the orange  "Prepare Phase 2"  button, then at restart press
+   the F3 key on the Microsoft screen.
+   (This is only needed on machines where VBS is locked in the firmware.
+    To be safe, keep the BitLocker recovery key at hand.)
+
+5. Restart the machine once. From then on TwinCAT starts, and the
+   machine stays clean on its own - you do not need to deal with this
+   anymore.
+
+
+VERIFY
+------
+Start the program again (as admin): all 4 status indicators must be
+green:
+   - VBS:                  Disabled (OK)
+   - Background service:   Running (Active)
+   - hypervisorlaunchtype: Off
+   - UEFI lock:            No lock (OK)
+
+Log (details / errors):
+   C:\ProgramData\VbsAutoOff\VbsAutoOff.log
+   (in the program the log can be copied, and the folder can be opened)
+
+
+UNINSTALL
+---------
+The "Uninstall" button at the bottom right of the program (removes the
+service and the watchdog task). The effect of the cleanup so far remains.
+
+
+IF SOMETHING DOES NOT WORK
+--------------------------
+- If SmartScreen/Defender steps in (unsigned exe):
+  "More info" -> "Run anyway".
+- If the exe "does not even start": run it from a local folder (not from
+  a network drive), as administrator.
+- Fallback: the  fallback_script\regedit.ps1  performs the same cleanup
+  manually, from an administrator PowerShell:
+     powershell -ExecutionPolicy Bypass -File regedit.ps1
+
+
+NOTE
+----
+The lasting, "correct" solution from the IT side would be to exclude the
+Device Guard GPO for these machines. Until then, this program ensures
+that TwinCAT runs.
